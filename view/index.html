@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Excel</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 50px;
+      text-align: center;
+    }
+
+    .upload-container {
+      border: 2px dashed #007bff;
+      padding: 20px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+
+    input[type="file"] {
+      margin: 20px 0;
+    }
+
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>Upload Excel File</h1>
+  <div class="upload-container">
+    <form id="uploadForm" enctype="multipart/form-data">
+      <input type="file" id="excelFile" name="file" accept=".xlsx, .xls" required>
+      <button type="submit">Upload</button>
+    </form>
+    
+    <p id="message" style="margin-top: 20px; color: green;"></p>
+  </div>
+
+  <script>
+    const form = document.getElementById('uploadForm');
+    const message = document.getElementById('message');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const fileInput = document.getElementById('excelFile');
+      const file = fileInput.files[0];
+      if (!file) {
+        message.textContent = "Please select a file.";
+        message.style.color = "red";
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        const response = await fetch('http://localhost:3000/api/upload', {
+          method: 'POST',
+          body: formData,
+        });
+
+        if (response) {
+          message.textContent = response.response || 'Upload successful!';
+          message.style.color = 'green';
+        } else {
+          message.textContent = response.response || 'Upload failed!';
+          message.style.color = 'red';
+        }
+      } catch (error) {
+        message.textContent = 'Error uploading file.';
+        message.style.color = 'red';
+        console.error(error);
+      }
+    });
+  </script>
+</body>
+</html>
